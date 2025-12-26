@@ -1,46 +1,39 @@
 import { test, expect, request } from '@playwright/test';
+import testData from '../../shared-test-data/restful-booker.json';
 
 const BASE_URL = 'https://restful-booker.herokuapp.com';
 
 test.describe('RESTful Booker API', () => {
-  test('Auth - Valid Credentials', async ({ request }) => {
-    const response = await request.post(`${BASE_URL}/auth`, {
-      data: { username: 'admin', password: 'password123' },
+  for (const creds of testData.auth) {
+    test(`Auth - ${creds.valid ? 'Valid' : 'Invalid'} Credentials (${creds.username})`, async ({ request }) => {
+      const response = await request.post(`${BASE_URL}/auth`, {
+        data: { username: creds.username, password: creds.password },
+      });
+      if (creds.valid) {
+        expect(response.ok()).toBeTruthy();
+        const body = await response.json();
+        expect(body.token).toBeTruthy();
+      } else {
+        expect(response.status()).toBe(200); // API returns 200 with error message
+        const body = await response.json();
+        expect(body.reason).toBe('Bad credentials');
+      }
     });
-    expect(response.ok()).toBeTruthy();
-    const body = await response.json();
-    expect(body.token).toBeTruthy();
-  });
+  }
 
-  test('Auth - Invalid Credentials', async ({ request }) => {
-    const response = await request.post(`${BASE_URL}/auth`, {
-      data: { username: 'invalid', password: 'wrong' },
+  for (const booking of testData.bookings) {
+    test(`Create Booking - ${booking.valid ? 'Valid' : 'Invalid'} Data`, async ({ request }) => {
+      const response = await request.post(`${BASE_URL}/booking`, { data: booking.valid ? booking : {} });
+      if (booking.valid) {
+        expect(response.ok()).toBeTruthy();
+        const body = await response.json();
+        expect(body.bookingid).toBeTruthy();
+        expect(body.booking.firstname).toBe(booking.firstname);
+      } else {
+        expect(response.status()).toBe(500); // API returns 500 for missing fields
+      }
     });
-    expect(response.status()).toBe(200); // API returns 200 with error message
-    const body = await response.json();
-    expect(body.reason).toBe('Bad credentials');
-  });
-
-  test('Create Booking - Valid Data', async ({ request }) => {
-    const bookingData = {
-      firstname: 'Jim',
-      lastname: 'Brown',
-      totalprice: 111,
-      depositpaid: true,
-      bookingdates: { checkin: '2023-01-01', checkout: '2023-01-02' },
-      additionalneeds: 'Breakfast',
-    };
-    const response = await request.post(`${BASE_URL}/booking`, { data: bookingData });
-    expect(response.ok()).toBeTruthy();
-    const body = await response.json();
-    expect(body.bookingid).toBeTruthy();
-    expect(body.booking.firstname).toBe('Jim');
-  });
-
-  test('Create Booking - Invalid Data', async ({ request }) => {
-    const response = await request.post(`${BASE_URL}/booking`, { data: {} });
-    expect(response.status()).toBe(500); // API returns 500 for missing fields
-  });
+  }
 
   test('Get Booking(s)', async ({ request }) => {
     const response = await request.get(`${BASE_URL}/booking`);

@@ -1,0 +1,6 @@
+{
+  "parabankLogin": [
+    { "username": "testuser", "password": "testpass", "valid": true },
+    { "username": "wronguser", "password": "wrongpass", "valid": false }
+  ]
+}

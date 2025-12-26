@@ -46,6 +46,13 @@ public class ParabankATMNavigationErrorTest {
     @Test(retryAnalyzer = RetryAnalyzer.class)
     public void testATMWithdrawDeposit() {
         driver.get("https://parabank.parasoft.com/parabank/index.htm");
+        // Handle pop-up modal or alert if present
+        try {
+            driver.switchTo().alert().accept();
+            System.out.println("Closed alert pop-up.");
+        } catch (Exception e) {
+            // No alert present, continue
+        }
         try {
             WaitUtils.waitForElementVisible(driver, By.name("username")).sendKeys("testuser");
             WaitUtils.waitForElementVisible(driver, By.name("password")).sendKeys("testpass");
@@ -72,6 +79,13 @@ public class ParabankATMNavigationErrorTest {
     @Test(retryAnalyzer = RetryAnalyzer.class)
     public void testNavigationInvalidURL() {
         driver.get("https://parabank.parasoft.com/parabank/invalidpage.htm");
+        // Handle pop-up modal or alert if present
+        try {
+            driver.switchTo().alert().accept();
+            System.out.println("Closed alert pop-up.");
+        } catch (Exception e) {
+            // No alert present, continue
+        }
         try {
             WebElement body = WaitUtils.waitForElementVisible(driver, By.tagName("body"));
             Assert.assertTrue(body.getText().toLowerCase().contains("404") || body.getText().toLowerCase().contains("not found") || body.getText().toLowerCase().contains("error") || body.getText().toLowerCase().contains("please enter a username and password"));
@@ -84,6 +98,13 @@ public class ParabankATMNavigationErrorTest {
     @Test(retryAnalyzer = RetryAnalyzer.class)
     public void testSessionExpiryHandling() {
         driver.get("https://parabank.parasoft.com/parabank/index.htm");
+        // Handle pop-up modal or alert if present
+        try {
+            driver.switchTo().alert().accept();
+            System.out.println("Closed alert pop-up.");
+        } catch (Exception e) {
+            // No alert present, continue
+        }
         try {
             WaitUtils.waitForElementVisible(driver, By.name("username")).sendKeys("testuser");
             WaitUtils.waitForElementVisible(driver, By.name("password")).sendKeys("testpass");

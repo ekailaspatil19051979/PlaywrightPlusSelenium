@@ -45,11 +45,30 @@ public class ParabankFundsTransferTest {
 
     @Test(retryAnalyzer = RetryAnalyzer.class)
     public void testFundsTransferValid() {
-        driver.get("https://parabank.parasoft.com/parabank/index.htm");
         try {
-            WaitUtils.waitForElementVisible(driver, By.name("username")).sendKeys("testuser");
-            WaitUtils.waitForElementVisible(driver, By.name("password")).sendKeys("testpass");
+            WaitUtils.waitForElementVisible(driver, By.name("username")).sendKeys("s123");
+            WaitUtils.waitForElementVisible(driver, By.name("password")).sendKeys("s123");
             WaitUtils.waitForElementClickable(driver, By.cssSelector("input[type='submit']")).click();
+
+            // Handle pop-up modal or alert if present
+            try {
+                driver.switchTo().alert().accept();
+                System.out.println("Closed alert pop-up.");
+            } catch (Exception e) {
+                // No alert present, continue
+            }
+
+            // Verify login was successful
+            boolean loggedIn = false;
+            try {
+                WaitUtils.waitForElementVisible(driver, By.linkText("Log Out"));
+                loggedIn = true;
+            } catch (Exception e) {
+                System.out.println("Login failed or Log Out link not found. Page source:\n" + driver.getPageSource());
+            }
+            Assert.assertTrue(loggedIn, "Login was not successful. Cannot proceed to Transfer Funds.");
+
+            // Proceed directly to transfer funds
             WaitUtils.waitForElementClickable(driver, By.linkText("Transfer Funds")).click();
             WaitUtils.waitForElementVisible(driver, By.name("amount")).sendKeys("10");
             WaitUtils.waitForElementVisible(driver, By.name("fromAccountId")).sendKeys("12345");
@@ -65,11 +84,30 @@ public class ParabankFundsTransferTest {
 
     @Test(retryAnalyzer = RetryAnalyzer.class)
     public void testFundsTransferExceedsBalance() {
-        driver.get("https://parabank.parasoft.com/parabank/index.htm");
         try {
-            WaitUtils.waitForElementVisible(driver, By.name("username")).sendKeys("testuser");
-            WaitUtils.waitForElementVisible(driver, By.name("password")).sendKeys("testpass");
+            WaitUtils.waitForElementVisible(driver, By.name("username")).sendKeys("s123");
+            WaitUtils.waitForElementVisible(driver, By.name("password")).sendKeys("s123");
             WaitUtils.waitForElementClickable(driver, By.cssSelector("input[type='submit']")).click();
+
+            // Handle pop-up modal or alert if present
+            try {
+                driver.switchTo().alert().accept();
+                System.out.println("Closed alert pop-up.");
+            } catch (Exception e) {
+                // No alert present, continue
+            }
+
+            // Verify login was successful
+            boolean loggedIn = false;
+            try {
+                WaitUtils.waitForElementVisible(driver, By.linkText("Log Out"));
+                loggedIn = true;
+            } catch (Exception e) {
+                System.out.println("Login failed or Log Out link not found. Page source:\n" + driver.getPageSource());
+            }
+            Assert.assertTrue(loggedIn, "Login was not successful. Cannot proceed to Transfer Funds.");
+
+            // Proceed directly to transfer funds
             WaitUtils.waitForElementClickable(driver, By.linkText("Transfer Funds")).click();
             WaitUtils.waitForElementVisible(driver, By.name("amount")).sendKeys("999999");
             WaitUtils.waitForElementVisible(driver, By.name("fromAccountId")).sendKeys("12345");

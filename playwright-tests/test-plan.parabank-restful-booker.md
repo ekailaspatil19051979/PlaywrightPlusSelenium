@@ -27,6 +27,33 @@
 
 ## 5. Test Scenarios
 
+### 5.0 Integration & Advanced Features
+
+#### 5.0.1 API & UI Chaining (End-to-End)
+- **Scenario:** Create booking via API, verify booking appears in UI.
+- **Steps:**
+  1. Use API to create a new booking.
+  2. Login to UI as the booking owner.
+  3. Navigate to bookings page.
+  4. Verify the new booking is present.
+- **Expected:** Booking created via API is visible in UI.
+- **Reporting:** Attach API request/response and UI screenshot.
+
+#### 5.0.2 API Contract Testing
+- **Scenario:** Validate API response schema for /booking endpoints.
+- **Steps:**
+  1. Call /booking endpoint.
+  2. Validate response matches expected schema (fields, types).
+- **Expected:** Schema validation passes.
+- **Reporting:** Attach schema and validation result.
+
+#### 5.0.3 Advanced BDD
+- **Scenario:** Use custom BDD steps to chain API and UI actions.
+- **Steps:**
+  1. Given I create a booking via API
+  2. When I login to the UI
+  3. Then I should see the booking in the UI
+
 ### 5.1 Parabank UI Scenarios
 
 #### 5.1.1 Login - Valid Credentials
@@ -200,4 +227,4 @@
 
 **References:**  
 - [browser-matrix.json](../shared-config/browser-matrix.json)  
-- [allure-integration.md](../shared-reporting/allure-integration.md)  
+- [allure-integration.md](../shared-reporting/allure-integration.md)

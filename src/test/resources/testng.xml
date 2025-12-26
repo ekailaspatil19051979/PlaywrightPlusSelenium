@@ -1,0 +1,15 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name="SeleniumSuite" parallel="tests" thread-count="4">
+    <!-- ...existing code... -->
+    <test name="ChromeTests">
+        <!-- ...existing code... -->
+    </test>
+    <test name="FirefoxTests">
+        <!-- ...existing code... -->
+    </test>
+    <test name="EdgeTests">
+        <!-- ...existing code... -->
+    </test>
+    <!-- Add more <test> blocks as needed for other browsers -->
+    <!-- ...existing code... -->
+</suite>

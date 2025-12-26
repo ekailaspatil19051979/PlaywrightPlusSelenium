@@ -1,0 +1,26 @@
+{
+  "auth": [
+    { "username": "admin", "password": "password123", "valid": true },
+    { "username": "invalid", "password": "wrong", "valid": false }
+  ],
+  "bookings": [
+    {
+      "firstname": "Jim",
+      "lastname": "Brown",
+      "totalprice": 111,
+      "depositpaid": true,
+      "bookingdates": { "checkin": "2023-01-01", "checkout": "2023-01-02" },
+      "additionalneeds": "Breakfast",
+      "valid": true
+    },
+    {
+      "firstname": "",
+      "lastname": "",
+      "totalprice": 0,
+      "depositpaid": false,
+      "bookingdates": { "checkin": "", "checkout": "" },
+      "additionalneeds": "",
+      "valid": false
+    }
+  ]
+}

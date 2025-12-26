@@ -77,8 +77,9 @@ public class ParabankATMNavigationErrorSteps {
         driver.findElement(org.openqa.selenium.By.cssSelector("input[type='submit']")).click();
         atmPage = new ParabankATMNavigationErrorPage(driver);
     }
-    // Add more parameterized steps as needed for maintainability
-}
+
+    @When("I navigate to the account overview page")
+    public void i_navigate_to_account_overview() {
         driver.get("https://parabank.parasoft.com/parabank/overview.htm");
     }
 
@@ -87,21 +88,5 @@ public class ParabankATMNavigationErrorSteps {
         org.openqa.selenium.WebElement body = driver.findElement(org.openqa.selenium.By.tagName("body"));
         String text = body.getText().toLowerCase();
         Assert.assertTrue(text.contains("session") || text.contains("login") || text.contains("expired") || text.contains("error") || text.contains("please enter a username and password"));
-
-    // Parameterized login step for reuse
-    @Given("I login as {string} with password {string}")
-    public void i_login_as_with_password(String username, String password) {
-        boolean headless = Boolean.parseBoolean(System.getProperty("headless", "false"));
-        ChromeOptions options = new ChromeOptions();
-        if (headless) options.addArguments("--headless=new");
-        driver = new ChromeDriver(options);
-        driver.manage().window().setSize(new Dimension(1280, 1024));
-        Hooks.setDriver(driver);
-        driver.get("https://parabank.parasoft.com/parabank/index.htm");
-        driver.findElement(org.openqa.selenium.By.name("username")).sendKeys(username);
-        driver.findElement(org.openqa.selenium.By.name("password")).sendKeys(password);
-        driver.findElement(org.openqa.selenium.By.cssSelector("input[type='submit']")).click();
-        atmPage = new ParabankATMNavigationErrorPage(driver);
-    }
     }
 }

@@ -41,14 +41,42 @@
             <version>2.24.0</version>
             <scope>test</scope>
         </dependency>
-        <!-- Accessibility: axe-selenium-java -->
+        <!-- Add org.json for JSON handling -->
         <dependency>
-            <groupId>com.deque.axe</groupId>
-            <artifactId>axe-selenium-java</artifactId>
-            <version>4.8.0</version>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20231013</version>
+        </dependency>
+        <!-- Add RestAssured for API testing -->
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <version>5.4.0</version>
             <scope>test</scope>
         </dependency>
+        <!-- Accessibility: axe-selenium-java -->
+        <!-- Removed axe-selenium-java and lighthouse-cli-wrapper due to unreachable repository -->
     </dependencies>
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <base.url>https://dev.example.com</base.url>
+            </properties>
+        </profile>
+        <profile>
+            <id>qa</id>
+            <properties>
+                <base.url>https://qa.example.com</base.url>
+            </properties>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <properties>
+                <base.url>https://prod.example.com</base.url>
+            </properties>
+        </profile>
+    </profiles>
     <build>
         <plugins>
             <plugin>
@@ -61,7 +89,13 @@
                     </suiteXmlFiles>
                     <systemPropertyVariables>
                         <allure.results.directory>target/allure-results</allure.results.directory>
+                        <!-- Pass base.url from profile or environment variable -->
+                        <base.url>${base.url}</base.url>
                     </systemPropertyVariables>
+                    <environmentVariables>
+                        <!-- Optionally, allow overriding via environment variable -->
+                        <BASE_URL>${env.BASE_URL}</BASE_URL>
+                    </environmentVariables>
                 </configuration>
             </plugin>
             <!-- Allure Maven plugin for report generation -->
@@ -73,12 +107,117 @@
                     <resultsDirectory>target/allure-results</resultsDirectory>
                 </configuration>
             </plugin>
+            <!-- Removed exec-maven-plugin Lighthouse CLI Wrapper configuration due to missing dependency -->
+            <!-- Failsafe plugin for integration tests -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>3.2.5</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Compiler plugin to set Java version -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>11</source>
+                    <target>11</target>
+                </configuration>
+            </plugin>
+            <!-- Surefire Report Plugin for HTML reports -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>3.2.5</version>
+            </plugin>
+            <!-- Allure Commandline Plugin for report generation -->
+            <plugin>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-commandline</artifactId>
+                <version>2.24.0</version>
+                <executions>
+                    <execution>
+                        <id>allure-report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Maven Clean Plugin to remove old reports -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.3.2</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>target/allure-results</directory>
+                        </fileset>
+                        <fileset>
+                            <directory>target/allure-report</directory>
+                        </fileset>
+                        <fileset>
+                            <directory>target/lighthouse-report.html</directory>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+            <!-- SpotBugs plugin for static code analysis -->
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <version>4.8.3.0</version>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Checkstyle plugin for code style checks -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <id>checkstyle</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <configLocation>google_checks.xml</configLocation>
+                    <encoding>UTF-8</encoding>
+                    <consoleOutput>true</consoleOutput>
+                    <failsOnError>true</failsOnError>
+                </configuration>
+            </plugin>
+            <!-- Surefire plugin already generates JUnit XML reports by default, which are used by CI/CD tools -->
+            <!-- If you want to customize the report location for CI/CD: -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <reportsDirectory>target/surefire-reports</reportsDirectory>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
-    <repositories>
-        <repository>
-            <id>deque-public</id>
-            <url>https://repo.deque.com/public</url>
-        </repository>
-    </repositories>
+    <!-- Removed deque-public repository as it is not reachable -->
+    <!-- Docker support: see project root Dockerfile for containerized test execution -->
 </project>

@@ -47,6 +47,13 @@ public class ParabankLoginTest {
     @Test(retryAnalyzer = RetryAnalyzer.class)
     public void testValidLogin() {
         driver.get("https://parabank.parasoft.com/parabank/index.htm");
+        // Handle pop-up modal or alert if present
+        try {
+            driver.switchTo().alert().accept();
+            System.out.println("Closed alert pop-up.");
+        } catch (Exception e) {
+            // No alert present, continue
+        }
         try {
             WaitUtils.waitForElementVisible(driver, By.name("username")).sendKeys("testuser");
             WaitUtils.waitForElementVisible(driver, By.name("password")).sendKeys("testpass");
@@ -77,6 +84,13 @@ public class ParabankLoginTest {
     @Test(retryAnalyzer = RetryAnalyzer.class)
     public void testInvalidLogin() {
         driver.get("https://parabank.parasoft.com/parabank/index.htm");
+        // Handle pop-up modal or alert if present
+        try {
+            driver.switchTo().alert().accept();
+            System.out.println("Closed alert pop-up.");
+        } catch (Exception e) {
+            // No alert present, continue
+        }
         try {
             WaitUtils.waitForElementVisible(driver, By.name("username")).sendKeys("wronguser");
             WaitUtils.waitForElementVisible(driver, By.name("password")).sendKeys("wrongpass");

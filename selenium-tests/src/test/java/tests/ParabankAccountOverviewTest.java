@@ -46,6 +46,13 @@ public class ParabankAccountOverviewTest {
     @Test(retryAnalyzer = RetryAnalyzer.class)
     public void testAccountOverview() {
         driver.get("https://parabank.parasoft.com/parabank/index.htm");
+        // Handle pop-up modal or alert if present
+        try {
+            driver.switchTo().alert().accept();
+            System.out.println("Closed alert pop-up.");
+        } catch (Exception e) {
+            // No alert present, continue
+        }
         try {
             WaitUtils.waitForElementVisible(driver, By.name("username")).sendKeys("testuser");
             WaitUtils.waitForElementVisible(driver, By.name("password")).sendKeys("testpass");

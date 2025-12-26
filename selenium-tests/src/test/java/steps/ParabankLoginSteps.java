@@ -9,10 +9,10 @@ import org.testng.Assert;
 import pages.ParabankLoginPage;
 
 public class ParabankLoginSteps {
-    private WebDriver driver;
-
+    private static WebDriver driver;
     private ParabankLoginPage loginPage;
 
+    // Standard step for navigation
     @Given("I am on the Parabank login page")
     public void i_am_on_the_login_page() {
         boolean headless = Boolean.parseBoolean(System.getProperty("headless", "false"));
@@ -22,10 +22,12 @@ public class ParabankLoginSteps {
         }
         driver = new ChromeDriver(options);
         driver.manage().window().setSize(new Dimension(1280, 1024));
+        Hooks.setDriver(driver);
         loginPage = new ParabankLoginPage(driver);
         loginPage.open();
     }
 
+    // Parameterized, reusable login step
     @When("I login with username {string} and password {string}")
     public void i_login_with_username_and_password(String username, String password) {
         loginPage.enterUsername(username);
@@ -36,12 +38,18 @@ public class ParabankLoginSteps {
     @Then("I should see the Accounts Overview page")
     public void i_should_see_accounts_overview() {
         Assert.assertTrue(loginPage.isAccountsOverviewDisplayed(), "Accounts Overview header not displayed");
-        driver.quit();
     }
 
     @Then("I should see an error message")
     public void i_should_see_error_message() {
         Assert.assertTrue(loginPage.isErrorDisplayed(), "Error message not displayed");
-        driver.quit();
     }
+
+    // Highly reusable step for login as any user
+    @Given("I login as {string} with password {string}")
+    public void i_login_as_with_password(String username, String password) {
+        i_am_on_the_login_page();
+        i_login_with_username_and_password(username, password);
+    }
+    // Add more parameterized steps as needed for maintainability
 }

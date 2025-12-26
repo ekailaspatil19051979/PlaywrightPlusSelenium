@@ -9,9 +9,10 @@ import org.testng.Assert;
 import pages.ParabankAccountOverviewPage;
 
 public class ParabankAccountOverviewSteps {
-    private WebDriver driver;
+    private static WebDriver driver;
     private ParabankAccountOverviewPage overviewPage;
 
+    // Standard step for login
     @Given("I am logged in to Parabank")
     public void i_am_logged_in_to_parabank() {
         boolean headless = Boolean.parseBoolean(System.getProperty("headless", "false"));
@@ -19,6 +20,7 @@ public class ParabankAccountOverviewSteps {
         if (headless) options.addArguments("--headless=new");
         driver = new ChromeDriver(options);
         driver.manage().window().setSize(new Dimension(1280, 1024));
+        Hooks.setDriver(driver);
         driver.get("https://parabank.parasoft.com/parabank/index.htm");
         driver.findElement(org.openqa.selenium.By.name("username")).sendKeys("testuser");
         driver.findElement(org.openqa.selenium.By.name("password")).sendKeys("testpass");
@@ -26,6 +28,7 @@ public class ParabankAccountOverviewSteps {
         overviewPage = new ParabankAccountOverviewPage(driver);
     }
 
+    // Parameterized, reusable navigation step
     @When("I navigate to the Accounts Overview page")
     public void i_navigate_to_accounts_overview() {
         // Already on overview after login, but try to click link if present
@@ -39,6 +42,22 @@ public class ParabankAccountOverviewSteps {
         boolean found = overviewPage.isAccountsOverviewDisplayed();
         boolean error = overviewPage.isErrorDisplayed();
         Assert.assertTrue(found || error, "Neither Accounts Overview nor error found");
-        driver.quit();
     }
+
+    // Highly reusable step for login as any user
+    @Given("I login as {string} with password {string}")
+    public void i_login_as_with_password(String username, String password) {
+        boolean headless = Boolean.parseBoolean(System.getProperty("headless", "false"));
+        ChromeOptions options = new ChromeOptions();
+        if (headless) options.addArguments("--headless=new");
+        driver = new ChromeDriver(options);
+        driver.manage().window().setSize(new Dimension(1280, 1024));
+        Hooks.setDriver(driver);
+        driver.get("https://parabank.parasoft.com/parabank/index.htm");
+        driver.findElement(org.openqa.selenium.By.name("username")).sendKeys(username);
+        driver.findElement(org.openqa.selenium.By.name("password")).sendKeys(password);
+        driver.findElement(org.openqa.selenium.By.cssSelector("input[type='submit']")).click();
+        overviewPage = new ParabankAccountOverviewPage(driver);
+    }
+    // Add more parameterized steps as needed for maintainability
 }

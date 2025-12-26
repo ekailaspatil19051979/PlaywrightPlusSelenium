@@ -41,6 +41,13 @@
             <version>2.24.0</version>
             <scope>test</scope>
         </dependency>
+        <!-- Accessibility: axe-selenium-java -->
+        <dependency>
+            <groupId>com.deque.axe</groupId>
+            <artifactId>axe-selenium-java</artifactId>
+            <version>4.8.0</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -68,4 +75,10 @@
             </plugin>
         </plugins>
     </build>
+    <repositories>
+        <repository>
+            <id>deque-public</id>
+            <url>https://repo.deque.com/public</url>
+        </repository>
+    </repositories>
 </project>

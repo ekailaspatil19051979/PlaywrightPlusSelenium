@@ -9,9 +9,10 @@ import org.testng.Assert;
 import pages.ParabankATMNavigationErrorPage;
 
 public class ParabankATMNavigationErrorSteps {
-    private WebDriver driver;
+    private static WebDriver driver;
     private ParabankATMNavigationErrorPage atmPage;
 
+    // Standard step for login
     @Given("I am logged in to Parabank")
     public void i_am_logged_in_to_parabank() {
         boolean headless = Boolean.parseBoolean(System.getProperty("headless", "false"));
@@ -19,6 +20,7 @@ public class ParabankATMNavigationErrorSteps {
         if (headless) options.addArguments("--headless=new");
         driver = new ChromeDriver(options);
         driver.manage().window().setSize(new Dimension(1280, 1024));
+        Hooks.setDriver(driver);
         driver.get("https://parabank.parasoft.com/parabank/index.htm");
         driver.findElement(org.openqa.selenium.By.name("username")).sendKeys("testuser");
         driver.findElement(org.openqa.selenium.By.name("password")).sendKeys("testpass");
@@ -26,6 +28,7 @@ public class ParabankATMNavigationErrorSteps {
         atmPage = new ParabankATMNavigationErrorPage(driver);
     }
 
+    // Parameterized, reusable ATM actions
     @When("I use ATM Services to withdraw 20 and deposit 50")
     public void i_use_atm_services() {
         try {
@@ -41,7 +44,6 @@ public class ParabankATMNavigationErrorSteps {
     public void i_should_see_success_error_or_unavailable() {
         String text = atmPage.getPanelText();
         Assert.assertTrue(text.contains("success") || text.contains("insufficient") || text.contains("error") || text.contains("please enter a username and password") || text.contains("atm services not available"));
-        driver.quit();
     }
 
     @When("I navigate to an invalid Parabank URL")
@@ -53,12 +55,30 @@ public class ParabankATMNavigationErrorSteps {
     public void i_should_see_404_or_error() {
         String text = atmPage.getBodyText();
         Assert.assertTrue(text.contains("404") || text.contains("not found") || text.contains("error") || text.contains("please enter a username and password"));
-        driver.quit();
     }
 
     @When("my session expires")
     public void my_session_expires() {
         driver.manage().deleteAllCookies();
+    }
+
+    // Highly reusable step for login as any user
+    @Given("I login as {string} with password {string}")
+    public void i_login_as_with_password(String username, String password) {
+        boolean headless = Boolean.parseBoolean(System.getProperty("headless", "false"));
+        ChromeOptions options = new ChromeOptions();
+        if (headless) options.addArguments("--headless=new");
+        driver = new ChromeDriver(options);
+        driver.manage().window().setSize(new Dimension(1280, 1024));
+        Hooks.setDriver(driver);
+        driver.get("https://parabank.parasoft.com/parabank/index.htm");
+        driver.findElement(org.openqa.selenium.By.name("username")).sendKeys(username);
+        driver.findElement(org.openqa.selenium.By.name("password")).sendKeys(password);
+        driver.findElement(org.openqa.selenium.By.cssSelector("input[type='submit']")).click();
+        atmPage = new ParabankATMNavigationErrorPage(driver);
+    }
+    // Add more parameterized steps as needed for maintainability
+}
         driver.get("https://parabank.parasoft.com/parabank/overview.htm");
     }
 
@@ -67,6 +87,21 @@ public class ParabankATMNavigationErrorSteps {
         org.openqa.selenium.WebElement body = driver.findElement(org.openqa.selenium.By.tagName("body"));
         String text = body.getText().toLowerCase();
         Assert.assertTrue(text.contains("session") || text.contains("login") || text.contains("expired") || text.contains("error") || text.contains("please enter a username and password"));
-        driver.quit();
+
+    // Parameterized login step for reuse
+    @Given("I login as {string} with password {string}")
+    public void i_login_as_with_password(String username, String password) {
+        boolean headless = Boolean.parseBoolean(System.getProperty("headless", "false"));
+        ChromeOptions options = new ChromeOptions();
+        if (headless) options.addArguments("--headless=new");
+        driver = new ChromeDriver(options);
+        driver.manage().window().setSize(new Dimension(1280, 1024));
+        Hooks.setDriver(driver);
+        driver.get("https://parabank.parasoft.com/parabank/index.htm");
+        driver.findElement(org.openqa.selenium.By.name("username")).sendKeys(username);
+        driver.findElement(org.openqa.selenium.By.name("password")).sendKeys(password);
+        driver.findElement(org.openqa.selenium.By.cssSelector("input[type='submit']")).click();
+        atmPage = new ParabankATMNavigationErrorPage(driver);
+    }
     }
 }

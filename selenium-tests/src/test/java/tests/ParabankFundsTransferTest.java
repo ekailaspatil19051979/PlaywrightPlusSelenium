@@ -5,6 +5,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.Dimension;
+import com.example.utils.WaitUtils;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -18,57 +19,67 @@ public class ParabankFundsTransferTest {
     @Parameters("browser")
     public void setUp() {
         boolean headless = Boolean.parseBoolean(System.getProperty("headless", "false"));
-        org.openqa.selenium.chrome.ChromeOptions options = new org.openqa.selenium.chrome.ChromeOptions();
-        if (headless) {
-            options.addArguments("--headless=new");
+        String browser = System.getProperty("browser", "chrome");
+        switch (browser.toLowerCase()) {
+            case "firefox":
+                org.openqa.selenium.firefox.FirefoxOptions ffOptions = new org.openqa.selenium.firefox.FirefoxOptions();
+                if (headless) ffOptions.addArguments("-headless");
+                driver = new org.openqa.selenium.firefox.FirefoxDriver(ffOptions);
+                break;
+            case "edge":
+                org.openqa.selenium.edge.EdgeOptions edgeOptions = new org.openqa.selenium.edge.EdgeOptions();
+                if (headless) edgeOptions.addArguments("--headless=new");
+                driver = new org.openqa.selenium.edge.EdgeDriver(edgeOptions);
+                break;
+            case "safari":
+                driver = new org.openqa.selenium.safari.SafariDriver();
+                break;
+            case "chrome":
+            default:
+                org.openqa.selenium.chrome.ChromeOptions options = new org.openqa.selenium.chrome.ChromeOptions();
+                if (headless) options.addArguments("--headless=new");
+                driver = new org.openqa.selenium.chrome.ChromeDriver(options);
         }
-        driver = new ChromeDriver(options);
         driver.manage().window().setSize(new Dimension(1280, 1024));
     }
 
-    @Test
+    @Test(retryAnalyzer = RetryAnalyzer.class)
     public void testFundsTransferValid() {
         driver.get("https://parabank.parasoft.com/parabank/index.htm");
-        driver.findElement(By.name("username")).sendKeys("testuser");
-        driver.findElement(By.name("password")).sendKeys("testpass");
-        driver.findElement(By.cssSelector("input[type='submit']")).click();
         try {
-            driver.findElement(By.linkText("Transfer Funds")).click();
-            if (driver.findElements(By.name("amount")).size() > 0) {
-                driver.findElement(By.name("amount")).sendKeys("10");
-                driver.findElement(By.name("fromAccountId")).sendKeys("12345");
-                driver.findElement(By.name("toAccountId")).sendKeys("54321");
-                driver.findElement(By.cssSelector("input[type='submit']")).click();
-                WebElement confirmation = driver.findElement(By.id("rightPanel"));
-                Assert.assertTrue(confirmation.getText().toLowerCase().contains("transfer complete") || confirmation.getText().toLowerCase().contains("error") || confirmation.getText().toLowerCase().contains("insufficient"));
-            } else {
-                System.out.println("Transfer Funds form not available.");
-            }
+            WaitUtils.waitForElementVisible(driver, By.name("username")).sendKeys("testuser");
+            WaitUtils.waitForElementVisible(driver, By.name("password")).sendKeys("testpass");
+            WaitUtils.waitForElementClickable(driver, By.cssSelector("input[type='submit']")).click();
+            WaitUtils.waitForElementClickable(driver, By.linkText("Transfer Funds")).click();
+            WaitUtils.waitForElementVisible(driver, By.name("amount")).sendKeys("10");
+            WaitUtils.waitForElementVisible(driver, By.name("fromAccountId")).sendKeys("12345");
+            WaitUtils.waitForElementVisible(driver, By.name("toAccountId")).sendKeys("54321");
+            WaitUtils.waitForElementClickable(driver, By.cssSelector("input[type='submit']")).click();
+            WebElement confirmation = WaitUtils.waitForElementVisible(driver, By.id("rightPanel"));
+            Assert.assertTrue(confirmation.getText().toLowerCase().contains("transfer complete") || confirmation.getText().toLowerCase().contains("error") || confirmation.getText().toLowerCase().contains("insufficient"));
         } catch (Exception e) {
             System.out.println("Transfer Funds navigation or form failed: " + e.getMessage());
+            Assert.fail("Transfer Funds navigation or form failed: " + e.getMessage());
         }
     }
 
-    @Test
+    @Test(retryAnalyzer = RetryAnalyzer.class)
     public void testFundsTransferExceedsBalance() {
         driver.get("https://parabank.parasoft.com/parabank/index.htm");
-        driver.findElement(By.name("username")).sendKeys("testuser");
-        driver.findElement(By.name("password")).sendKeys("testpass");
-        driver.findElement(By.cssSelector("input[type='submit']")).click();
         try {
-            driver.findElement(By.linkText("Transfer Funds")).click();
-            if (driver.findElements(By.name("amount")).size() > 0) {
-                driver.findElement(By.name("amount")).sendKeys("999999");
-                driver.findElement(By.name("fromAccountId")).sendKeys("12345");
-                driver.findElement(By.name("toAccountId")).sendKeys("54321");
-                driver.findElement(By.cssSelector("input[type='submit']")).click();
-                WebElement errorPanel = driver.findElement(By.id("rightPanel"));
-                Assert.assertTrue(errorPanel.getText().toLowerCase().contains("error") || errorPanel.getText().toLowerCase().contains("insufficient") || errorPanel.getText().toLowerCase().contains("transfer") || errorPanel.getText().toLowerCase().contains("complete"));
-            } else {
-                System.out.println("Transfer Funds form not available.");
-            }
+            WaitUtils.waitForElementVisible(driver, By.name("username")).sendKeys("testuser");
+            WaitUtils.waitForElementVisible(driver, By.name("password")).sendKeys("testpass");
+            WaitUtils.waitForElementClickable(driver, By.cssSelector("input[type='submit']")).click();
+            WaitUtils.waitForElementClickable(driver, By.linkText("Transfer Funds")).click();
+            WaitUtils.waitForElementVisible(driver, By.name("amount")).sendKeys("999999");
+            WaitUtils.waitForElementVisible(driver, By.name("fromAccountId")).sendKeys("12345");
+            WaitUtils.waitForElementVisible(driver, By.name("toAccountId")).sendKeys("54321");
+            WaitUtils.waitForElementClickable(driver, By.cssSelector("input[type='submit']")).click();
+            WebElement errorPanel = WaitUtils.waitForElementVisible(driver, By.id("rightPanel"));
+            Assert.assertTrue(errorPanel.getText().toLowerCase().contains("error") || errorPanel.getText().toLowerCase().contains("insufficient") || errorPanel.getText().toLowerCase().contains("transfer") || errorPanel.getText().toLowerCase().contains("complete"));
         } catch (Exception e) {
             System.out.println("Transfer Funds navigation or form failed: " + e.getMessage());
+            Assert.fail("Transfer Funds navigation or form failed: " + e.getMessage());
         }
     }
 

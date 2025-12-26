@@ -1,0 +1,28 @@
+pipeline {
+    agent any
+    stages {
+        stage('Playwright Smoke') {
+            steps {
+                dir('playwright-tests') {
+                    sh 'npm ci'
+                    sh 'npx playwright install'
+                    sh 'npm test'
+                    archiveArtifacts artifacts: 'results/**', fingerprint: true
+                }
+            }
+        }
+        stage('Selenium Regression') {
+            steps {
+                dir('selenium-tests') {
+                    sh 'mvn test'
+                    archiveArtifacts artifacts: 'target/surefire-reports/**', fingerprint: true
+                }
+            }
+        }
+    }
+    post {
+        always {
+            junit 'selenium-tests/target/surefire-reports/*.xml'
+        }
+    }
+}

@@ -1,0 +1,1 @@
+{"uuid":"6d4a680b-d7c2-4831-afed-3766a560b8a6","name":"tests.ParabankLoginTest.setUp","children":["41d1cdc6-077a-4acb-b001-fc084eeebae2"],"description":"","befores":[{"name":"setUp","status":"passed","stage":"finished","description":"","steps":[],"attachments":[],"parameters":[],"start":1766747127838,"stop":1766747130015}],"afters":[],"start":1766747127837,"stop":1766747130015}

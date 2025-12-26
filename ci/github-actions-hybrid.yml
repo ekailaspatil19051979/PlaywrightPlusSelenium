@@ -1,0 +1,57 @@
+name: Hybrid Automation CI
+
+on:
+  push:
+    branches: [main, release/*]
+  pull_request:
+
+jobs:
+  playwright-smoke:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: playwright-tests
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+      - name: Install dependencies
+        run: npm ci && npx playwright install
+      - name: Run Playwright Smoke
+        run: npm test
+      - name: Generate Allure Playwright Report
+        run: npx allure generate ../shared-reporting/allure-playwright-results -o ../shared-reporting/allure-playwright-report --clean
+      - name: Upload Playwright Allure Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-allure-report
+          path: shared-reporting/allure-playwright-report/
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-artifacts
+          path: playwright-tests/results/
+
+  selenium-regression:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: selenium-tests
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Java
+        uses: actions/setup-java@v4
+      - name: Run Selenium Regression
+        run: mvn clean test
+      - name: Generate Allure Selenium Report
+        run: mvn allure:report
+      - name: Upload Selenium Allure Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: selenium-allure-report
+          path: shared-reporting/allure-selenium-results/
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: selenium-artifacts
+          path: selenium-tests/target/surefire-reports/

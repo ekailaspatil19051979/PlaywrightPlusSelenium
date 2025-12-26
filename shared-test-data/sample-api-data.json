@@ -1,0 +1,6 @@
+{
+  "apiTestData": [
+    { "endpoint": "/users", "method": "GET", "expectedStatus": 200 },
+    { "endpoint": "/login", "method": "POST", "expectedStatus": 201 }
+  ]
+}

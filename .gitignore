@@ -1,0 +1,26 @@
+# Node
+node_modules/
+*.log
+npm-debug.log*
+
+# Playwright
+results/
+shared-reporting/playwright-report/
+*.zip
+*.webm
+*.png
+
+# VSCode
+.vscode/
+.env
+.DS_Store
+.idea/
+*.swp
+
+# Java
+selenium-tests/target/
+*.class
+*.iml
+
+# Misc
+*.tmp
